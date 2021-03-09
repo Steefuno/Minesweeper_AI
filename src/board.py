@@ -39,9 +39,6 @@ class Board:
 
     # Queries a cell, returns -1 if tile is a bomb, otherwise returns how many neighboring bombs exist
     def query(self, pos):
-        assert (pos[0] < self.d), "Cell position is out of bounds"
-        assert (pos[1] < self.d), "Cell position is out of bounds"
-
         # If queried tile is a bomb, return -1
         if (self.board_data[pos[0]][pos[1]] == 1):
             return -1
@@ -59,6 +56,21 @@ class Board:
                 continue
             count += self.board_data[offset_pos[0]][offset_pos[1]]
         return count
+    
+    # Get the neighbors of a position
+    def get_neighbors(self, pos):
+        neighbors = []
+        for direction in query_directions:
+            offset_pos = (
+                pos[0] + direction[0],
+                pos[1] + direction[1]
+            )
+            if (offset_pos[0] < 0) or (offset_pos[0] >= self.d):
+                continue
+            if (offset_pos[1] < 0) or (offset_pos[1] >= self.d):
+                continue
+            neighbors.append(offset_pos)
+        return neighbors
 
     # Outputs all the cells of the board
     def output(self):
