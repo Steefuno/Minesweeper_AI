@@ -50,9 +50,9 @@ class Board:
                 pos[0] + direction[0],
                 pos[1] + direction[1]
             )
-            if (offset_pos[0] > self.d) or (offset_pos[0] < 0):
+            if (offset_pos[0] >= self.d) or (offset_pos[0] < 0):
                 continue
-            if (offset_pos[1] > self.d) or (offset_pos[1] < 0):
+            if (offset_pos[1] >= self.d) or (offset_pos[1] < 0):
                 continue
             count += self.board_data[offset_pos[0]][offset_pos[1]]
         return count
