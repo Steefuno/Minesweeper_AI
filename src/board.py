@@ -16,7 +16,7 @@ class Board:
     # Creates a Board instance
     def __init__(self, d, n):
         assert (d > 0), "Width must be a positive integer"
-        assert (n > 0), "Number of bombs must be a postiive integer"
+        assert (n >= 0), "Number of bombs must be a postiive integer"
         self.d = d
         self.board_data = numpy.zeros((d, d), dtype = int)
         self.set_bombs(n)
@@ -24,7 +24,7 @@ class Board:
     
     # Clears the board and randomly places bombs
     def set_bombs(self, n):
-        assert (n > 0), "Number of bombs must be a postitive integer"
+        assert (n >= 0), "Number of bombs must be a postitive integer"
         assert (n <= self.d ** 2), "Number of bombs must be less than or equal to the number of cells"
         self.board_data.fill(0)
 
