@@ -188,6 +188,7 @@ class Agent:
         return (hidden_neighbors_n == hidden_safe_neighbors) and (hidden_neighbors_n > 0)
 
 # Example usage of basic_agent.py
+"""
 b = board.Board(20, 60)
 b.output()
 
@@ -196,3 +197,4 @@ agent.run()
 
 print("Result:")
 print(agent)
+"""

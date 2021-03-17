@@ -1,0 +1,39 @@
+%https://www.overleaf.com/learn/latex/Creating_a_document_in_LaTeX
+\documentclass[13pt]{report}
+\usepackage{graphicx}
+
+\title{CS 440: Inference-Informed Action}
+\author{Steven Nguyen \& Kyra Kennedy}
+\date{19 March 2021}
+
+\begin{document}
+
+\begin{titlepage}
+\maketitle
+\end{titlepage}
+
+\section*{Abstract}
+In this project, we demonstrate how to collect data and infer information for future actions using agents that play minesweeper.
+
+\section*{Academic Integrity}
+It was agreed from when we first started that Steven Nguyen would handle the Basic Agent and the board representation while Kyra Kennedy worked on the Improved Agent. Both members assisted in this write up.\\
+I, Steven Nguyen, have not copied our code or taken from online or another student's work.\\
+I, Kyra Kennedy, have not copied our code or taken from online or another student's work.
+
+\break
+\section*{Basic Agent}
+The basic agent is a simple agent for handling minesweeper. This assumes a hidden tile is safe only when a all the bombs around a visible tile are already visible. This assumes a hidden tile is a bomb only when the number of hidden tiles around a tile matches the clue on a tile.
+
+\subsection*{Representation}
+The board was represented with a Numpy 2darray in which bombs are represented by 1s and safe tiles are represented with 0s. The basic agent used a dictionary of cells indexed by board positions to store the knowledge base. In a cell's information, we stored: if the cell is a bomb, a list of the positions of all of its neighbors, a list of the positions of the neighbors that are revealed to be not bombs, a list of the positions of the neighbors that are revealed to be bombs, a list of the positions of unrevealed neighbors, and the integer clue if the cell has been queried.When a relationship between 2 cells is updated, the relevant lists of relationships in both cells are updated.
+
+\subsection*{Inference}
+When a new cell is queried, if it is a bomb, we first mark the cell as a bomb and update all of its relationships to display it as a bomb and to display it as not hidden anymore. If the queried cell is not a bomb, then we use the clue to determine if the surrounding hidden cells are either all bombs or all not bombs. For each hidden cells that gets updated, we repeat this process. Then, in each visible neighbor, we check if the surrounding hidden cells are either all bombs or all not bombs in case revealing a cell has allowed us to declare hidden cells as all bombs or all not bombs. For each hidden cells that gets updated, we repeat this process.\\
+Assuming the strongest inference this agent can make is if a queried cell's surrounding hidden tiles are all bombs or all not bombs, yes, this is all we can deduct from a given clue. This is because when a cell is changed, only its direct neighbors can be affected, so, since this agent is checking all of the direct neighbors for new inferences, everything deductable is detected.
+
+\subsection*{Decisions}
+Given that there are no queried tiles or no tiles with clues, all tiles have the same probability of being queried randomly. After a tile is queried, and its neighbors are checked to be all bombs or all not bombs, all of it's visible neighbors will be checked in case their surrounding tiles are all bombs or all not bombs. After any tile is marked to be a bomb or safe from checking if another tile is surrounded by all bombs or not all bombs, the tile will be queried if not a bomb and then all of it's neighbors will be checked to be all bombs or all not bombs. Given that there is at least 1 tile marked as a bomb or 1 tile marked as safe, all hidden tiles will have the same probability of being queried randomly to do the same process as above.
+
+\subsection*{Performance}
+
+\end{document}
