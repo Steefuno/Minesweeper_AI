@@ -36,4 +36,27 @@ Given that there are no queried tiles or no tiles with clues, all tiles have the
 
 \subsection*{Performance}
 
+\subsection*{Efficiency}
+
+\break
+\section*{Improved Agent}
+The improved agent, or Boxed && S.W.E.P.T (mineSweeper Wins Every Predicament Triumphantly), aims to make more complex decisions that the basic agent can not make. While it still incorporates logic used in the basic agent, the improved agent groups cells together so multiple clues can be used to perform logic.
+
+\subsection*{Representation}
+The board is represented the same way as the basic agent, with all the same information still being stored. The improved agent represents even more information, however. This agent stores groups of cells that are affected by clues from neighboring cells. Each group contains the interconnected cells that affect each other so logic can later be applied to them.
+
+\subsection*{Inference}
+For this agent, we use cells that have been queried to group unqueried cells together based on clues that affect them. Each of these groups then uses multiple clues to determine where bombs are located. The most prevalent example of this would be if three cells in a row had the clues "1 2 1". The basic agent would not be able to determine where the bombs are, however, the improved agent recognizes how the cell with clue 1 is affected by the cell with clue 2 and can determine where the mine is. This process can be repeated with each group again and again until the board is completed to the best of the AI's ability (which is still, of course, affected by the luck of the board).\\
+The program deduces everything it can from a given clue before continuing. We can be sure of this because it must use a clue to its fullest extent by comparing it to other cells and clues before making decisions. If a piece of information can't deduce everything it can, it isn't used until surrounding information allows it to make a full deduction.
+
+\subsection*{Decisions}
+In the beginning of a game, the decision of which cell to query is random. Once the information from that query is gained, the improved agent at first moves in a similar way to the basic agent. The improved agent moves differently, however, in that it looks at unqueried cells that are affected by clues and sees where bombs are likely to be and which cells can be queried. Once the location of bombs are determined, unqueried, but safe, cells can be explored and provide more information to the agent.\\
+To further explain how the agent makes decisions, we can look at the "1 2 1" example again. For the sake of the example, these clues are in the first row of a 2x3 grid, and the second row will be referred to as a, b, c. Based on the first clue, the bomb can be in position a OR b. The second clue reveals that bombs can be positions a AND b, a AND c, or b AND c. And the last clue states that the bomb can be in b OR c. The logic used in the agent runs through the probabilities of where a bomb can be located and uses logic to determine what bomb locations break the rules the clues establish. This is applied to each group repeatedly to discover more and more of the board.\\
+In terms of what cells it decides to query next, it is based on the order the groups, and their cells, are inserted into their data structures. While the first query is random, afterwards groups are pulled from the list and then cells from that list are queried based on the logic previously described.
+
+\subsection*{Performance}
+
+\subsection*{Efficiency}
+By grouping the cells, the improved agent allows for better performance. If the probability of where a bomb is was calculated for N uncovered cells, there would be 2^N possible combinations. The grouping allows the program to focus solely on cells that are immediately affected and calculate probabilities based on the logic given by clues, reducing the 2^N combinations.
+
 \end{document}
