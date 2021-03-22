@@ -1,7 +1,9 @@
 import board
 import random
+from itertools import combinations
 
 query_directions = board.query_directions
+
 
 # for grouping
 def intersect_bombs(intersect):
@@ -10,6 +12,23 @@ def intersect_bombs(intersect):
             return True
         else:
             return False
+
+
+# for grouping
+def has_common_neighbors(cell0, cell1):
+    neighbors_set0 = set()
+    for neighbor in cell0.hiddden_neighbors:
+        neighbors_set0.add(neighbor)
+
+    neighbors_set1 = set()
+    for neighbor in cell1.hidden_neighbors:
+        neighbors_set1.add(neighbor)
+
+    intersect = neighbors_set0.intersection(neighbors_set1)
+    intersect = filter(intersect_bombs(), intersect)
+
+    return len(intersect) > 0
+
 
 class Agent:
     class Cell:
@@ -50,7 +69,7 @@ class Agent:
     # Runs the Agent
     def run(self):
         try:
-            while (len(self.fringe) > 0):
+            while len(self.fringe) > 0:
                 index = random.randrange(0, len(self.fringe), 1)
                 pos = self.fringe[index]
                 self.step(pos)
@@ -111,7 +130,7 @@ class Agent:
         # Recurse into neighbors that are deemed safe
         safe_neighbors = cell.safe_neighbors.copy()
         for neighbor_pos in safe_neighbors:
-            if (neighbor_pos in self.fringe):  # If not queried yet, query
+            if neighbor_pos in self.fringe:  # If not queried yet, query
                 self.step(neighbor_pos)
             else:  # Else, just check if surrounded by safe or not
                 self.check_neighbors(neighbor_pos)
@@ -120,15 +139,15 @@ class Agent:
     # Checks if the cell is surrounded by either bombs or safe tiles
     def check_neighbors(self, pos):
         cell = self.data[pos]
-        if (cell.clue == None):  # Ignore cells that don't have enough info to check neighbors
+        if cell.clue == None:  # Ignore cells that don't have enough info to check neighbors
             return
 
-        if (self.is_surrounded_by_bombs(pos)):  # If a cell is surrounded by bombs, mark all as bombs
+        if self.is_surrounded_by_bombs(pos):  # If a cell is surrounded by bombs, mark all as bombs
             hidden_neighbors = cell.hidden_neighbors.copy()
             for neighbor_pos in hidden_neighbors:
                 self.mark_bomb(neighbor_pos)
                 self.remove_from_fringe(neighbor_pos)
-        elif (self.is_surrounded_by_safe(pos)):  # If a cell is surrounded by safe, mark all as safe
+        elif self.is_surrounded_by_safe(pos):  # If a cell is surrounded by safe, mark all as safe
             hidden_neighbors = cell.hidden_neighbors.copy()
             for neighbor_pos in hidden_neighbors:
                 self.mark_safe(neighbor_pos)
@@ -195,10 +214,71 @@ class Agent:
         return (hidden_neighbors_n == hidden_safe_neighbors) and (hidden_neighbors_n > 0)
 
     # --- Logic Jazz ---
+    class lvar:
+        def __init__(self, name):
+            self.name = name
+
+        def __str__(self):
+            return self.name
+
+        def is_lvar(self, var):
+            l = self.lvar()
+            if type(l) == type(var):
+                return True
+            else:
+                return False
+
+    def run_improve(self):
+        groups = self.grouping()
+
+        for group in groups:
+            hidden_logic_vars = {}
+            rule_args = []
+
+            for cell in group:
+                bomb_count = 0
+                hidden_neighbor_logic_vars = []
+
+                for neighbor in cell.neighbors:
+                    if neighbor.is_bomb:
+                        bomb_count += 1
+                        continue
+
+                    if neighbor in cell.hidden_neighbors:
+                        hidden_logic_var = None
+                        if neighbor in hidden_logic_vars:
+                            hidden_logic_var = hidden_logic_vars[neighbor]
+                        else:
+                            hidden_logic_var = self.lvar(neighbor)
+                            hidden_logic_vars[neighbor] = hidden_logic_var
+
+                        hidden_neighbor_logic_vars.append(hidden_logic_var)
+
+                combs = combinations(hidden_neighbor_logic_vars, cell.clue-bomb_count)
+
+                or_args = []
+                for comb in combs:
+                    and_args = []
+                    for (bomb, index) in comb:
+                        and_args.append(hidden_neighbor_logic_vars[index] == bomb)
+                        or_args.append(None and and_args)
+
+                rule_args.append(None or or_args)
+
+        rule = None and rule_args
+
+        hidden_lvar_array = []
+        for lvar in hidden_logic_vars:
+            hidden_lvar_array.append(lvar)
+
+        # run probabilities for where bombs are and where bombs can be
+        # query cells that are confirmed not bombs
+
+
 
     # --- Groups cells based on clues that affect them ---
     # by grouping the cells logic can be applied more easily on the location of bombs
-    def grouping(self, board):
+    def grouping(self):
         groups = set()
         registered_cell_set = set()
 
@@ -208,8 +288,10 @@ class Agent:
                 cell = self.data[pos]
 
                 group = set()
+                self.grouping_starting_from(cell, group, registered_cell_set)
 
-                self.grouping_starting_from()
+                if len(group) > 0:
+                    groups.add(group)
 
         return groups
 
@@ -226,7 +308,7 @@ class Agent:
         if cell.bomb_neighbors == cell.clue:
             return
 
-        if not self.has_common_neighbors(cell, prev_cell):
+        if not has_common_neighbors(cell, prev_cell):
             return
 
         group.add(cell)
@@ -236,18 +318,4 @@ class Agent:
             self.grouping_starting_from(neighbor, group, reg_cells, cell)
 
         return
-
-    def has_common_neighbors(self, cell0, cell1):
-        neighbors_set0 = set()
-        for neighbor in cell0.hiddden_neighbors:
-            neighbors_set0.add(neighbor)
-
-        neighbors_set1 = set()
-        for neighbor in cell1.hidden_neighbors:
-            neighbors_set1.add(neighbor)
-
-        intersect = neighbors_set0.intersection(neighbors_set1)
-        intersect = filter(intersect_bombs(), intersect)
-
-        return len(intersect) > 0
 
