@@ -55,6 +55,8 @@ To further explain how the agent makes decisions, we can look at the "1 2 1" exa
 In terms of what cells it decides to query next, it is based on the order the groups, and their cells, are inserted into their data structures. While the first query is random, afterwards groups are pulled from the list and then cells from that list are queried based on the logic previously described.
 
 \subsection*{Performance}
+With the improved agent, larger boards can be solved and with a higher success rate than the the basic agent. Minesweeper becomes hard when the agent has to use two or more clues to come to a conclusion on where bombs are located. The logic behinds this becomes more complex since where the bombs can be placed increases, providing more and more, possible placements.\\
+As described in previous sections, the improved agent can solve situations such as "1 2 1" when the basic agent would run out of moves. Since it is able to draw logic from multiple clues, it can find more locations of bombs, imrpoving upon the basic algorithm.
 
 \subsection*{Efficiency}
 By grouping the cells, the improved agent allows for better performance. If the probability of where a bomb is was calculated for N uncovered cells, there would be 2^N possible combinations. The grouping allows the program to focus solely on cells that are immediately affected and calculate probabilities based on the logic given by clues, reducing the 2^N combinations.
