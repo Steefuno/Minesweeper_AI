@@ -66,7 +66,7 @@ class Agent:
                 self.fringe.append(pos)
         return
 
-    # Runs the Agent
+    # Runs the Basic Agent
     def run(self):
         try:
             while len(self.fringe) > 0:
@@ -228,9 +228,11 @@ class Agent:
             else:
                 return False
 
+    # runs the Improved Agent
     def run_improve(self):
         groups = self.grouping()
 
+        # queries each group
         for group in groups:
             hidden_logic_vars = {}
             rule_args = []
@@ -254,6 +256,7 @@ class Agent:
 
                         hidden_neighbor_logic_vars.append(hidden_logic_var)
 
+                # find all the combinations of where bombs can be
                 combs = combinations(hidden_neighbor_logic_vars, cell.clue-bomb_count)
 
                 or_args = []
@@ -271,9 +274,11 @@ class Agent:
         for lvar in hidden_logic_vars:
             hidden_lvar_array.append(lvar)
 
-        # run probabilities for where bombs are and where bombs can be
-        # query cells that are confirmed not bombs
-
+        # what needs to happen:
+        #   run probabilities for where bombs are based on hidden cells and the surrounding clues
+        #   use each of the probabilities found to determine if there is enough chance of there being a bomb at a given cell
+        #   mark bombs and query safe cells (probability of a mine is low enough/confirmed safe)
+        # this repeats for each group until all groups are queries aka the board is solved
 
 
     # --- Groups cells based on clues that affect them ---
@@ -295,6 +300,8 @@ class Agent:
 
         return groups
 
+    # forms groups from a starting cell
+    # includes cells that are still hidden and affected by clues other neighboring cells are affected by
     def grouping_starting_from(self, cell, group, reg_cells, prev_cell):
         if cell in self.finge:      # shouldn't be a part of the group
             return
@@ -319,3 +326,14 @@ class Agent:
 
         return
 
+# Example usage of improved_agent.py
+"""
+b = board.Board(20, 60)
+b.output()
+
+agent = Agent(b, stop_on_bomb = True)
+agent.run_improve()
+
+print("Result:")
+print(agent)
+"""
